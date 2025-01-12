@@ -1,0 +1,23 @@
+ body {
+     background-color: #6393c3;
+ }
+
+ .card {
+     width: 100%;
+     margin-top: 30px;
+ }
+
+ #add-btn {
+     position: fixed;
+     bottom: 5%;
+     right: 7%;
+     height: 70px;
+     width: 70px;
+     font-size: 50px;
+     color: white;
+     border-radius: 50%;
+     text-align: center;
+     cursor: pointer;
+     box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+     /* line-height: 0; */
+ }
