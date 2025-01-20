@@ -27,19 +27,21 @@
     for ( let post of posts) {
       const author = post.author;
       let postTitle = ""
+      // show or hide (edit button based on the user)
+      let user = getCurrentUser();
+      let isMyPost = user != null && post.author.id == user.id;
+      let editButtonContent = '';
+            
+      if (isMyPost) {
+        editButtonContent = `
+        <button class="btn btn-danger" style="margin-left:3px; float: right" onclick="deletePostBtnClicked('${encodeURIComponent(JSON.stringify(post))}')">Delete</button>
+        <button class="btn btn-secondary" style="float: right" onclick="editPostBtnClicked('${encodeURIComponent(JSON.stringify(post))}')">Edit</button>
+        `;
+        
+      }
       if(post.title != null){
         postTitle = post.title;
         }
-      // let user = getCurrentUser();
-      // let isMyPost = user != null && post.author.id === user.id;
-      // let editButtonContent = '';
-
-      if (true) {
-        editButtonContent = `<button class="btn btn-secondary" style="float: right" onclick="editPostBtnClicked('${encodeURIComponent(
-          JSON.stringify(post)
-        )}')">Edit</button>`;
-      }
-
       let content = `<div class="card shadow">
                 <div class="card-header">
                   <img
@@ -49,6 +51,7 @@
                     style="width: 40px; height: 40px"
                   />
                   <span>@${author.username}</span>
+                  
                   ${editButtonContent}
                 </div>
                 <div class="card-body" onclick="viewPost(${post.id})" style="cursor: pointer">
@@ -86,7 +89,9 @@
 
    function createPostBtnClicked() {
   let postId = document.getElementById('postIdInput').value;
-  let isCreate = postId == null || postId === '';
+  let isCreate = postId == null || postId == '';
+ 
+
 
   const title = document.getElementById('TitleInput').value;
   const description = document.getElementById('descriptionInput').value;
@@ -103,16 +108,17 @@
   formData.append('title', title);
   formData.append('image', image);
 
-  const url = isCreate
-    ? `${baseUrl}/posts`
-    : `${baseUrl}/posts/${postId}`;
-
-  const request = isCreate
-    ? axios.post(url, formData, { headers })
-    : axios.put(url, formData, { headers });
-
-  request
-    .then((response) => {
+  let url = ``
+  if (isCreate) {
+    url = `${baseUrl}/posts`;
+    
+    } else {
+      formData.append('_method', 'PUT');// this is for laravel to know
+      //  that we are updating a post and not creating a new one turning around the post request to a put request
+    url = `${baseUrl}/posts/${postId}`;
+    
+    }
+    axios.post(url, formData, { headers: headers }).then((response) => {
       const modal = document.getElementById('createPostModal');
       const modalInstance = bootstrap.Modal.getInstance(modal);
       modalInstance.hide();
@@ -120,9 +126,10 @@
       getPosts();
     })
     .catch((error) => {
-      const message = error.response?.data?.message || 'An error occurred';
+      const message = error.response?.data?.message || 'You are not authorized to perform this action';
       showAlert(message, 'danger');
     });
+    
 }
 
 
@@ -133,15 +140,16 @@
 
     function editPostBtnClicked(postObj) {
       let post = JSON.parse(decodeURIComponent(postObj));
-      
-
-      document.getElementById('postModalSubmitBtn').innerHTML = 'Update';
-      document.getElementById("postIdInput").value = post.id;
       document.getElementById('exampleCreatePostModalLabel').innerHTML =
-        'Edit Post';
+      'Edit Post';
+      document.getElementById('postIdInput').value =post.id;
+      document.getElementById("postIdInput").value = post.id;
       document.getElementById('TitleInput').value = post.title;
       document.getElementById('descriptionInput').value = post.body;
-      // document.getElementById('pictureInput').value = post.image;
+      document.getElementById('postModalSubmitBtn').innerHTML = 'Update';
+      
+
+      // document.getElementById('pictureInput')innerHTML.file[0] = post.image;
       let postModal = new bootstrap.Modal(
         document.getElementById('createPostModal'),
         {
@@ -150,4 +158,58 @@
       );
       postModal.toggle();
     }
+    function deletePostBtnClicked(postObj) {
+      let post = JSON.parse(decodeURIComponent(postObj));
+      document.getElementById('deletePostIdInput').value = post.id;
+      let postModal = new bootstrap.Modal(
+        document.getElementById('deletePostModal'),
+        {
+          // keyboard: false,
+        }
+      );
+      postModal.toggle();
+      
+      
+      };
+    function confirmPostDelete() {  
+      let postId = document.getElementById('deletePostIdInput').value;
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'multipart/form-data',
+        authorization: `Bearer ${token}`,
+        };
+        axios
+        .delete(`${baseUrl}/posts/${postId}`, { headers: headers })  
+        .then((response) => {
+          const modal = document.getElementById('deletePostModal');
+          const modalInstance = bootstrap.Modal.getInstance(modal);
+          modalInstance.hide();
+          showAlert('Post deleted successfully', 'success');
+          getPosts();
+        })
+        .catch((error) => {
+          const message = error.response?.data?.message || 'You are not authorized to perform this action';
+          showAlert(message, 'danger');
+        });
+
+    }
+
     // Call the function
+    function addBtnClicked(){
+      // let post = JSON.parse(decodeURIComponent(postObj));
+      document.getElementById('postModalSubmitBtn').innerHTML = 'Create';
+      document.getElementById('postIdInput').value ="";
+      document.getElementById('exampleCreatePostModalLabel').innerHTML ='Create A New Post';
+      document.getElementById('TitleInput').value ="";
+      document.getElementById('descriptionInput').value = "";
+      
+
+      // document.getElementById('pictureInput')innerHTML.file[0] = post.image;
+      let postModal = new bootstrap.Modal(
+        document.getElementById('createPostModal'),
+        {
+          // keyboard: false,
+        }
+      );
+      postModal.toggle();
+    };

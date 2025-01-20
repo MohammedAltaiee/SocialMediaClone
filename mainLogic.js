@@ -166,3 +166,14 @@ function setUpUI() {
         console.error("Element with ID 'profileTitle' not found!");
       }
     }
+function getCurrentUser() {
+     let user=null;
+      const storageUser = localStorage.getItem('user');
+      if (storageUser != null) {
+        user = JSON.parse(storageUser);
+      } else {
+        console.error('User data not found in local storage!');
+        return;
+      }
+      return user;
+    }

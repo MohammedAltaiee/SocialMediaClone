@@ -433,8 +433,8 @@
     const urlPostId = new URLSearchParams(window.location.search).get('postId');
 
     setUpUI();
-    getPostDetails();
-    function getPostDetails() {
+    getPost();
+    function getPost() {
       axios
         .get(`${baseUrl}/posts/${urlPostId}`)
         .then((res) => {
@@ -534,7 +534,7 @@
         .then((res) => {
           // console.log(res);
           showAlert('Comment created successfully', 'success');
-          getPostDetails();
+          getPost();
         })
         .catch((err) => {
           const error = err.response.data.message;
