@@ -4,7 +4,7 @@ let lastPage = 1;
 // infinite scroll for posts================ //
 window.addEventListener('scroll', function () {
   const endOfPage =
-    window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+    window.innerHeight + window.pageYOffset >= document.body.scrollHeight;
 
   if (endOfPage && currentPage < lastPage) {
     currentPage = currentPage + 1;
@@ -20,7 +20,9 @@ function userClicked(userId) {
   // alert(userId);
 }
 function getPosts(reload = true, page = 1) {
+  toggleLoader(true);
   axios.get(`${baseUrl}/posts?limit=2&page=${page}`).then((response) => {
+    toggleLoader(false);
     const posts = response.data.data;
     lastPage = response.data.meta.last_page;
     if (reload) {

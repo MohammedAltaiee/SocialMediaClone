@@ -34,12 +34,14 @@ function setUpUI() {
 function loginBtnClicked() {
   const username = document.getElementById('Username-name').value;
   const password = document.getElementById('Password-name').value;
+  toggleLoader(true);
   axios
     .post(`${baseUrl}/login`, {
       username: username,
       password: password,
     })
     .then((response) => {
+      // toggleLoader(false);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data.user));
 
@@ -53,6 +55,9 @@ function loginBtnClicked() {
     .catch((error) => {
       console.log(error);
       showAlert('Invalid username or password', 'danger');
+    })
+    .finally(() => {
+      toggleLoader(false);
     });
 }
 
@@ -71,6 +76,7 @@ function registerBtnClicked() {
   const headers = {
     'Content-Type': 'multipart/form-data',
   };
+  toggleLoader(true);
   axios
     .post(`${baseUrl}/register`, formData, {
       headers: headers,
@@ -89,6 +95,9 @@ function registerBtnClicked() {
     .catch((error) => {
       const errorData = error.response.data.message;
       showAlert(errorData, 'danger');
+    })
+    .finally(() => {
+      toggleLoader(false);
     });
 }
 function logoutBtnClicked() {
@@ -221,6 +230,7 @@ function confirmPostDelete() {
     'Content-Type': 'multipart/form-data',
     authorization: `Bearer ${token}`,
   };
+  toggleLoader(true);
   axios
     .delete(`${baseUrl}/posts/${postId}`, { headers: headers })
     .then((response) => {
@@ -235,6 +245,9 @@ function confirmPostDelete() {
         error.response?.data?.message ||
         'You are not authorized to perform this action';
       showAlert(message, 'danger');
+    })
+    .finally(() => {
+      toggleLoader(false);
     });
 }
 
@@ -265,6 +278,7 @@ function createPostBtnClicked() {
     //  that we are updating a post and not creating a new one turning around the post request to a put request
     url = `${baseUrl}/posts/${postId}`;
   }
+  toggleLoader(true);
   axios
     .post(url, formData, { headers: headers })
     .then((response) => {
@@ -282,5 +296,15 @@ function createPostBtnClicked() {
         error.response?.data?.message ||
         'You are not authorized to perform this action';
       showAlert(message, 'danger');
+    })
+    .finally(() => {
+      toggleLoader(false);
     });
+}
+function toggleLoader(show = true) {
+  if (show) {
+    document.getElementById('loader').style.visibility = 'visible';
+  } else {
+    document.getElementById('loader').style.visibility = 'hidden';
+  }
 }
