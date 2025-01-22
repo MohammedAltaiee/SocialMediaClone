@@ -21,3 +21,49 @@
      box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
      /* line-height: 0; */
  }
+  .post {
+      border: 1px solid #ccc;
+      padding: 20px;
+      width: 300px;
+      margin: 20px auto;
+      text-align: center;
+      font-family: Arial, sans-serif;
+  }
+
+  .post img {
+      width: 100%;
+      height: auto;
+  }
+
+  .post .content {
+      margin: 15px 0;
+  }
+
+  .post .stats {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 10px;
+  }
+
+  .post .stats span {
+      font-size: 14px;
+      color: #555;
+  }
+  .userMainInfo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      font-weight: 500;
+      font-size:20px ;
+  }
+  .numInfo {
+    color: #dbb6b6;
+      font-size: 18px;
+      font-weight: bold;
+  }
+  .numInfo span {
+      color:#555 ;
+      font-size: 30px;
+      font-weight: normal;
+  }
